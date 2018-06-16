@@ -1,0 +1,36 @@
+import java.nio.file.Paths
+
+buildscript {
+	ext {
+		junit_version = '5.1.0'
+	}
+}
+
+plugins {
+	id 'application'
+	id "com.github.johnrengelman.shadow" version "2.0.4"
+}
+
+mainClassName = 'br.com.idtem.Aplicacao'
+group 'br.com.idtem'
+version '0.0.1'
+
+sourceCompatibility = 1.10
+targetCompatibility = 1.10
+
+clean {
+	Paths.get('out').deleteDir()
+}
+
+repositories {
+	mavenLocal()
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'com.github.icarohs7.unoxlib:UNoxLib:0.2.3'
+	implementation 'com.miglayout:miglayout:3.7.4'
+	implementation 'com.jtattoo:JTattoo:1.6.11'
+	testImplementation "org.junit.jupiter:junit-jupiter-api:$junit_version"
+	testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junit_version"
+}
