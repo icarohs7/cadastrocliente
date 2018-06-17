@@ -1,7 +1,5 @@
 package br.com.idtem.model;
 
-import java.util.Observable;
-
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
@@ -9,7 +7,7 @@ import javafx.beans.property.StringProperty;
  * Classe representando um cliente
  */
 @SuppressWarnings("deprecation")
-public class Cliente extends Observable {
+public class Cliente {
 	private StringProperty id = new SimpleStringProperty("0");
 	private StringProperty nome = new SimpleStringProperty("");
 	private StringProperty telefoneResidencial = new SimpleStringProperty("");
@@ -22,19 +20,19 @@ public class Cliente extends Observable {
 	 */
 	public Cliente() {
 		
-		/* Rotina para disparar o evento de mudança aos observers */
-		Runnable mudar = () -> {
-			setChanged();
-			notifyObservers();
-		};
+		//		/* Rotina para disparar o evento de mudança aos observers */
+		//		Runnable mudar = () -> {
+		//			setChanged();
+		//			notifyObservers();
+		//		};
 		
-		/* Ligar as mudanças dos campos individuais ao observable da classe */
-		idProperty().addListener((observable, oldValue, newValue) -> mudar.run());
-		nomeProperty().addListener((observable, oldValue, newValue) -> mudar.run());
-		telefoneResidencialProperty().addListener((observable, oldValue, newValue) -> mudar.run());
-		telefoneComercialProperty().addListener((observable, oldValue, newValue) -> mudar.run());
-		telefoneCelularProperty().addListener((observable, oldValue, newValue) -> mudar.run());
-		emailProperty().addListener((observable, oldValue, newValue) -> mudar.run());
+		//		/* Ligar as mudanças dos campos individuais ao observable da classe */
+		//		idProperty().addListener((observable, oldValue, newValue) -> mudar.run());
+		//		nomeProperty().addListener((observable, oldValue, newValue) -> mudar.run());
+		//		telefoneResidencialProperty().addListener((observable, oldValue, newValue) -> mudar.run());
+		//		telefoneComercialProperty().addListener((observable, oldValue, newValue) -> mudar.run());
+		//		telefoneCelularProperty().addListener((observable, oldValue, newValue) -> mudar.run());
+		//		emailProperty().addListener((observable, oldValue, newValue) -> mudar.run());
 	}
 	
 	/**
@@ -153,5 +151,17 @@ public class Cliente extends Observable {
 	
 	public StringProperty emailProperty() {
 		return email;
+	}
+	
+	@Override
+	public String toString() {
+		return "Cliente{" +
+		       "id=" + getId() +
+		       ", nome=" + getNome() +
+		       ", telefoneResidencial=" + getTelefoneResidencial() +
+		       ", telefoneComercial=" + getTelefoneComercial() +
+		       ", telefoneCelular=" + getTelefoneCelular() +
+		       ", email=" + getEmail() +
+		       '}';
 	}
 }

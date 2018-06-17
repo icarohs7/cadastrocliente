@@ -4,12 +4,20 @@ import com.github.icarohs7.unoxlib.tables.EditableTableModel;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import br.com.idtem.model.Cliente;
+import br.com.idtem.model.ClienteDAO;
 
 public class SaidaController {
-	/* Instância do controller */
-	private static final SaidaController INSTANCE = new SaidaController();
+	/**
+	 * Instância do controller
+	 */
+	private static final SaidaController INSTANCE;
+	
+	static {
+		INSTANCE = new SaidaController();
+	}
 	
 	
 	public static SaidaController getInstance() {
@@ -29,6 +37,7 @@ public class SaidaController {
 	private List<Cliente> clientes = new LinkedList<>();
 	
 	private SaidaController() {
+		sincronizarTabela();
 	}
 	
 	/**
@@ -48,10 +57,37 @@ public class SaidaController {
 	}
 	
 	/**
+	 * Edita os dados de um cliente
+	 * @param row Linha da tabela em que o cliente está contido
+	 */
+	public void editarCliente(int row) {
+		EntradaController
+				.getINSTANCE()
+				.setCliente(clientes.stream()
+				                    .filter(c -> c.getId() == Integer.parseInt(tabela.getValueAt(row, 0).toString()))
+				                    .findFirst().orElseThrow());
+		
+	}
+	
+	public synchronized void sincronizarTabela() {
+		new Thread(() -> {
+			sincronizarClientes();
+			var listaArray = clientes.stream()
+			                         .map(cliente -> {
+				                         return new String[] { String.valueOf(cliente.getId()), cliente.getNome(), cliente.getEmail() };
+			                         })
+			                         .collect(Collectors.toList());
+			tabela.setAllRows(listaArray);
+		}).start();
+	}
+	
+	/**
 	 * Sincroniza os clientes locais com o banco
 	 */
-	public void sincronizarClientes() {
-		/* TODO: Sincronização de clientes com o banco */
+	private void sincronizarClientes() {
+		var novaLista = ClienteDAO.getINSTANCE().getClientes();
+		clientes.clear();
+		clientes.addAll(novaLista);
 	}
 	
 	public EditableTableModel getTabela() {

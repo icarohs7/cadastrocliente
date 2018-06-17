@@ -18,19 +18,29 @@ import javafx.beans.property.StringProperty;
  * Classe representando um campo de formulário
  * e sua label de nome
  */
-class Campo extends JPanel {
+public class Campo extends JPanel {
 	private JLabel label;
 	private JTextField campo;
 	private String nomeDoCampo;
 	
-	Campo(String nomeDoCampo) {
+	public Campo(String nomeDoCampo) {
 		super(new MigLayout("fillx, ins 2 2 2 2, gap 2 2 2 2"));
 		this.nomeDoCampo = nomeDoCampo;
 		/* Label para o campo de texto */
 		label = new JLabel(nomeDoCampo + ":");
 		
 		/* Campo de texto */
-		campo = new JTextField();
+		campo = new JTextField() {
+			@Override
+			public void setEnabled(boolean enabled) {
+				super.setEnabled(enabled);
+				if (enabled) {
+					setBackground(Color.WHITE);
+				} else {
+					setBackground(Color.GRAY.brighter());
+				}
+			}
+		};
 		
 		campo.addFocusListener(new FocusListener() {
 			
@@ -53,23 +63,13 @@ class Campo extends JPanel {
 		
 		/* Adicionar componentes ao painel */
 		add(label, "wrap");
-		add(campo, "grow, span");
-	}
-	
-	/**
-	 * Define a largura do painel, com o campo de ajustando
-	 * @param largura Largura do campo
-	 */
-	void setLargura(int largura) {
-		var dim = getPreferredSize();
-		dim.width = largura;
-		setPreferredSize(dim);
+		add(campo, "w 100%");
 	}
 	
 	/**
 	 * Realizar um binding bidirecional entre o texto do campo e a propriedade
 	 */
-	void bind(StringProperty property) {
+	public void bind(StringProperty property) {
 		
 		/* propriedade => campo */
 		property.addListener((observable, oldValue, newValue) -> {
@@ -83,6 +83,9 @@ class Campo extends JPanel {
 			@Override
 			public void insertUpdate(DocumentEvent e) {
 				property.set(campo.getText());
+				if (campo.getText().length() > 0 && !campo.getText().equals(nomeDoCampo)) {
+					campo.setForeground(Color.BLACK);
+				}
 			}
 			
 			@Override
@@ -91,9 +94,7 @@ class Campo extends JPanel {
 			}
 			
 			@Override
-			public void changedUpdate(DocumentEvent e) {
-				updatePlaceholder(false);
-			}
+			public void changedUpdate(DocumentEvent e) { }
 		});
 	}
 	
@@ -111,11 +112,11 @@ class Campo extends JPanel {
 		}
 	}
 	
-	JLabel getLabel() {
+	public JLabel getLabel() {
 		return label;
 	}
 	
-	JTextField getCampo() {
+	public JTextField getCampo() {
 		return campo;
 	}
 }

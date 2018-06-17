@@ -1,5 +1,6 @@
 package br.com.idtem.controller;
 
+import java.awt.Dimension;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,7 +14,11 @@ public class BotoesController {
 	/**
 	 * Instância do controller
 	 */
-	private static final BotoesController INSTANCE = new BotoesController();
+	private static final BotoesController INSTANCE;
+	
+	static {
+		INSTANCE = new BotoesController();
+	}
 	
 	public static BotoesController getINSTANCE() {
 		return INSTANCE;
@@ -47,7 +52,23 @@ public class BotoesController {
 	private BooleanProperty confirmando = new SimpleBooleanProperty(false);
 	
 	
+	/**
+	 * Inicialização do controller com a criação e configuração dos botões
+	 */
 	private BotoesController() {
+		for (String nomeBotao : NOMES_BOTOES) {
+			botoes.put(nomeBotao, new JButton(nomeBotao));
+			botoes.get(nomeBotao).setPreferredSize(new Dimension(100, 30));
+		}
+		
+		botoes.get("Inserir").addActionListener(evt -> inserir());
+		botoes.get("Remover").addActionListener(evt -> remover());
+		botoes.get("Alterar").addActionListener(evt -> alterar());
+		botoes.get("Confirmar").addActionListener(evt -> confirmar());
+		botoes.get("Cancelar").addActionListener(evt -> cancelar());
+		botoes.get("Sair").addActionListener(evt -> System.exit(0));
+		
+		registrarListeners();
 	}
 	
 	public Map<String, JButton> getBotoes() {
@@ -143,6 +164,16 @@ public class BotoesController {
 			botoes.get("Confirmar").setEnabled(false);
 			botoes.get("Cancelar").setEnabled(false);
 		}
+	}
+	
+	/**
+	 * Registra os listeners para eventos
+	 */
+	private void registrarListeners() {
+		confirmandoProperty().addListener((observable, oldValue, newValue) -> {
+			atualizarEstados();
+			entrada.setAllCamposEnabled(!newValue);
+		});
 	}
 	
 	public boolean isConfirmando() {

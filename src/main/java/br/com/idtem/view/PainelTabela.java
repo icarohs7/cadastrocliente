@@ -5,6 +5,8 @@ import com.github.icarohs7.unoxlib.tables.ScrollTable;
 import net.miginfocom.swing.MigLayout;
 
 import java.awt.Color;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -24,7 +26,7 @@ class PainelTabela extends JPanel {
 	 * Inicialização do painel
 	 */
 	PainelTabela() {
-		super(new MigLayout("nogrid, h 100%"));
+		super(new MigLayout("nogrid"));
 		criarComponentes();
 	}
 	
@@ -47,10 +49,33 @@ class PainelTabela extends JPanel {
 		table.getColumnModel().getColumn(1).setPreferredWidth(200);
 		
 		/* Montagem do painel */
-		var labelPanel = new JPanel(new MigLayout("nogrid"));
-		labelPanel.add(label);
-		labelPanel.add(separator, "ay center, w 100%");
-		add(labelPanel, "w 100%, wrap");
+		add(label);
+		add(separator, "w 100%, wrap");
 		add(scrollTable, "w 100%, h 100%");
+		
+		/* Registrar listener para cliques na tabela */
+		table.addMouseListener(new MouseListener() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				/* Se for um clique duplo */
+				if (e.getClickCount() % 2 == 0 && !e.isConsumed()) {
+					e.consume();
+					int row = table.rowAtPoint(e.getPoint());
+					controller.editarCliente(row);
+				}
+			}
+			
+			@Override
+			public void mousePressed(MouseEvent e) { }
+			
+			@Override
+			public void mouseReleased(MouseEvent e) { }
+			
+			@Override
+			public void mouseEntered(MouseEvent e) { }
+			
+			@Override
+			public void mouseExited(MouseEvent e) { }
+		});
 	}
 }
