@@ -2,7 +2,7 @@ package br.com.idtem.model;
 
 import javax.swing.JOptionPane;
 
-import br.com.idtem.lib.validation.ClienteValidator;
+import br.com.idtem.lib.validator.ClienteValidator;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 

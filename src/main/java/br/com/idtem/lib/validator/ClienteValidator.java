@@ -1,4 +1,4 @@
-package br.com.idtem.lib.validation;
+package br.com.idtem.lib.validator;
 
 import javax.swing.JOptionPane;
 

@@ -25,7 +25,6 @@ dependencies {
 	implementation 'com.github.icarohs7.unoxlib:UNoxLib:0.2.4'
 	implementation 'com.miglayout:miglayout:3.7.4'
 	implementation 'com.jtattoo:JTattoo:1.6.11'
-	implementation 'org.hibernate:hibernate-agroal:5.3.1.Final'
 	implementation 'mysql:mysql-connector-java:8.0.11'
 	implementation 'org.jetbrains:annotations:16.0.2'
 	testImplementation "org.junit.jupiter:junit-jupiter-api:$junit_version"
