@@ -1,5 +1,8 @@
 package br.com.idtem.model;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -41,15 +44,6 @@ public class ClienteDAO {
 	}
 	
 	/**
-	 * Retorna um cliente existente no banco
-	 * @param id ID do cliente
-	 * @return O objeto do cliente
-	 */
-	//	public Cliente getClientes(int id){
-	//
-	//	}
-	
-	/**
 	 * Cadastra um cliente
 	 * @param cliente Cliente a ser cadastrado
 	 * @return Número de linhas afetadas
@@ -80,7 +74,7 @@ public class ClienteDAO {
 	public int removeCliente(Cliente cliente) {
 		var sql = "DELETE FROM cliente WHERE id=" + cliente.getId();
 		var res = onDbContext(db -> {try (var stmt = db.createStatement()) { return stmt.executeUpdate(sql);}});
-		return safeIntReturn(res);
+		return safeReturn(res, 0);
 	}
 	
 	/**
@@ -134,19 +128,20 @@ public class ClienteDAO {
 			}
 		});
 		
-		return safeIntReturn(res);
+		return safeReturn(res, 0);
 	}
 	
 	/**
 	 * Método auxiliar para evitar NPEs (Null Pointer Exceptions)
-	 * @param num Valor processado
+	 * @param num      Valor processado
+	 * @param fallback Valor retornado caso o primeiro seja falso
 	 * @return O número ou 0, caso o mesmo seja nulo
 	 */
-	private int safeIntReturn(Integer num) {
+	private <T> T safeReturn(@Nullable T num, @NotNull T fallback) {
 		if (num != null) {
 			return num;
 		} else {
-			return 0;
+			return fallback;
 		}
 	}
 	
@@ -183,6 +178,12 @@ public class ClienteDAO {
 	 */
 	@FunctionalInterface
 	private interface DbRunnable<T> {
+		/**
+		 * Executa uma operação dentro de uma conexão ao banco de dados
+		 * @param db Conexão
+		 * @return O resultado da operação, definido pelo programador
+		 * @throws SQLException Lança uma SQLExeption caso haja algum erro durante o uso do banco
+		 */
 		T run(Connection db) throws SQLException;
 	}
 }

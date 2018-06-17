@@ -17,7 +17,7 @@ class PainelBotoes extends JPanel {
 	 * Inicialização do painel
 	 */
 	PainelBotoes() {
-		super(new MigLayout("fillx, nogrid, ins 0 7"));
+		super(new MigLayout("fillx, nogrid"));
 		criarComponentes();
 	}
 	

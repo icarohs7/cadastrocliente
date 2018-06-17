@@ -25,8 +25,8 @@ class PainelCampos extends JPanel {
 	 * Processo de criação dos componentes
 	 */
 	private void criarComponentes() {
-		/* Posicionar campos no painel */
 		
+		/* Posicionar campos no painel */
 		add(controller.getCampos().get("ID"), "w 10%");
 		add(controller.getCampos().get("Nome"), "w 90%, wrap");
 		add(controller.getCampos().get("Tel. Residencial"), "w 100%");

@@ -6,6 +6,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.swing.JOptionPane;
+
 import br.com.idtem.model.Cliente;
 import br.com.idtem.model.ClienteDAO;
 
@@ -64,16 +66,30 @@ public class SaidaController {
 	 * @param row Linha da tabela em que o cliente está contido
 	 */
 	public void editarCliente(int row) {
+		if (!EntradaController.getINSTANCE().getCliente().isVazio()) {
+			var res = JOptionPane.showConfirmDialog(null,
+			                                        "Deseja editar o usuario selecionado? " +
+			                                        "Os dados informados atualmente serao perdidos",
+			                                        "Confirmar edicao",
+			                                        JOptionPane.YES_NO_OPTION);
+			if (res != JOptionPane.YES_OPTION) {
+				return;
+			}
+		}
 		EntradaController
 				.getINSTANCE()
 				.setCliente(clientes.stream()
 				                    .filter(c -> c.getId() == Integer.parseInt(tabela.getValueAt(row, 0).toString()))
 				                    .findFirst().orElseThrow());
-		
+		BotoesController.getINSTANCE().atualizarEstados();
 	}
 	
-	public synchronized void sincronizarTabela() {
-		new Thread(() -> {
+	/**
+	 * Sincroniza os dados da tabela com o banco de dados
+	 * @return A thread responsável pela sincronização, iniciada automaticamente
+	 */
+	public synchronized Thread sincronizarTabela() {
+		var thr = new Thread(() -> {
 			sincronizarClientes();
 			var listaArray = clientes.stream()
 			                         .map(cliente -> {
@@ -81,7 +97,9 @@ public class SaidaController {
 			                         })
 			                         .collect(Collectors.toList());
 			tabela.setAllRows(listaArray);
-		}).start();
+		});
+		thr.start();
+		return thr;
 	}
 	
 	/**
@@ -91,18 +109,6 @@ public class SaidaController {
 		var novaLista = ClienteDAO.getINSTANCE().getClientes();
 		clientes.clear();
 		clientes.addAll(novaLista);
-	}
-	
-	/**
-	 * Retorna o próximo id de usuário
-	 * @return O id
-	 */
-	public int getNextId() {
-		return clientes.stream()
-		               .map(Cliente::getId)
-		               .reduce(Math::max)
-		               .map(value -> value + 1)
-		               .orElse(1);
 	}
 	
 	public EditableTableModel getTabela() {

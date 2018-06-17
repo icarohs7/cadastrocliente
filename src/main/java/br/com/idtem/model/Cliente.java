@@ -1,5 +1,8 @@
 package br.com.idtem.model;
 
+import javax.swing.JOptionPane;
+
+import br.com.idtem.lib.validation.ClienteValidator;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
@@ -33,6 +36,42 @@ public class Cliente {
 		}
 		
 		return false;
+	}
+	
+	/**
+	 * Verificar se o objeto contém todos os seus campos vazios
+	 * @return Verdadeiro se o objeto está vazio e falso do contrário
+	 */
+	public boolean isVazio() {
+		if (getNome().equals("")) {
+			if (getTelefoneResidencial().equals("")) {
+				if (getTelefoneComercial().equals("")) {
+					if (getTelefoneCelular().equals("")) {
+						return getEmail().equals("");
+					}
+				}
+			}
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Validar objeto em 2 níveis, primeiro verificando
+	 * se suas propriedades estão preenchidas, em seguida
+	 * verificando se as mesmas seguem os padrões definidos
+	 * e caso a validação seja bem sucedida, formatar o nome
+	 * preparando o cliente para o registro na base de dados
+	 * @return Verdadeiro se a validação for bem sucedida ou falso
+	 * 		case contrário
+	 */
+	public boolean isRegexValido() {
+		if (isValido()) {
+			return ClienteValidator.getINSTANCE().validate(this);
+		} else {
+			JOptionPane.showMessageDialog(null, "Preencha todos os dados do cliente primeiro");
+			return false;
+		}
 	}
 	
 	/**

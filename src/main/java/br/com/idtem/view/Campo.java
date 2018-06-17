@@ -26,6 +26,7 @@ public class Campo extends JPanel {
 	public Campo(String nomeDoCampo) {
 		super(new MigLayout("fillx, ins 2 2 2 2, gap 2 2 2 2"));
 		this.nomeDoCampo = nomeDoCampo;
+		
 		/* Label para o campo de texto */
 		label = new JLabel(nomeDoCampo + ":");
 		
@@ -83,15 +84,22 @@ public class Campo extends JPanel {
 		campo.getDocument().addDocumentListener(new DocumentListener() {
 			@Override
 			public void insertUpdate(DocumentEvent e) {
-				property.set(campo.getText());
-				if (campo.getText().length() > 0 && !campo.getText().equals(nomeDoCampo)) {
-					campo.setForeground(Color.BLACK);
+				if (!campo.getText().equals(nomeDoCampo)) {
+					property.set(campo.getText());
+					if (campo.getText().length() > 0) {
+						campo.setForeground(Color.BLACK);
+					}
 				}
 			}
 			
 			@Override
 			public void removeUpdate(DocumentEvent e) {
-				property.set(campo.getText());
+				if (!campo.getText().equals(nomeDoCampo)) {
+					property.set(campo.getText());
+					if (campo.getText().length() > 0) {
+						campo.setForeground(Color.BLACK);
+					}
+				}
 			}
 			
 			@Override

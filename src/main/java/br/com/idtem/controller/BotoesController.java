@@ -60,11 +60,14 @@ public class BotoesController {
 	 * Inicialização do controller com a criação e configuração dos botões
 	 */
 	private BotoesController() {
-		for (String nomeBotao : NOMES_BOTOES) {
+		
+		/* Criação dos botões */
+		for (String nomeBotao: NOMES_BOTOES) {
 			botoes.put(nomeBotao, new JButton(nomeBotao));
 			botoes.get(nomeBotao).setPreferredSize(new Dimension(100, 30));
 		}
 		
+		/* Adição dos listeners às ações dos botões */
 		botoes.get("Inserir").addActionListener(evt -> inserir());
 		botoes.get("Remover").addActionListener(evt -> remover());
 		botoes.get("Alterar").addActionListener(evt -> alterar());
@@ -72,11 +75,8 @@ public class BotoesController {
 		botoes.get("Cancelar").addActionListener(evt -> cancelar());
 		botoes.get("Sair").addActionListener(evt -> System.exit(0));
 		
+		/* Registro de listeners extras */
 		registrarListeners();
-	}
-	
-	public Map<String, JButton> getBotoes() {
-		return botoes;
 	}
 	
 	/**
@@ -87,11 +87,10 @@ public class BotoesController {
 		 * dados preenchidos */
 		if (saida.clienteExists(entrada.getCliente().getId())) {
 			entrada.limparCliente();
-		} else if (entrada.getCliente().isValido()) {
+			atualizarEstados();
+		} else if (entrada.getCliente().isRegexValido()) {
 			tipoConfirmacao = TipoConfirmacao.INSERIR;
 			setConfirmando(true);
-		} else {
-			JOptionPane.showMessageDialog(null, "Preencha todos os dados do cliente antes de inseri-lo no banco.");
 		}
 	}
 	
@@ -104,9 +103,6 @@ public class BotoesController {
 		if (entrada.getCliente().isValido() && saida.clienteExists(entrada.getCliente().getId())) {
 			tipoConfirmacao = TipoConfirmacao.REMOVER;
 			setConfirmando(true);
-		} else {
-			JOptionPane.showMessageDialog(null, "Preencha todos os dados do cliente e certifique-se que ele existe " +
-			                                    "antes de remove-lo do banco.");
 		}
 	}
 	
@@ -114,12 +110,9 @@ public class BotoesController {
 	 * Inicializa o processo de alteração de um registro
 	 */
 	public void alterar() {
-		if (entrada.getCliente().isValido() && saida.clienteExists(entrada.getCliente().getId())) {
+		if (entrada.getCliente().isRegexValido() && saida.clienteExists(entrada.getCliente().getId())) {
 			tipoConfirmacao = TipoConfirmacao.ALTERAR;
 			setConfirmando(true);
-		} else {
-			JOptionPane.showMessageDialog(null, "Preencha todos os dados do cliente e certifique-se que ele existe " +
-			                                    "antes de altera-lo.");
 		}
 	}
 	
@@ -135,43 +128,34 @@ public class BotoesController {
 			
 			/* Confirmar o cadastro de um cliente */
 			case INSERIR:
-				if (cliente.isValido()) {
-					if (dao.addCliente(cliente) > 1) {
-						JOptionPane.showMessageDialog(null, "Cliente inserido com sucesso");
-						saida.sincronizarTabela();
-					} else {
-						JOptionPane.showMessageDialog(null, "Ocorreu um erro ao inserir o cliente");
-					}
+				if (dao.addCliente(cliente) > 1) {
+					saida.sincronizarTabela();
+					entrada.limparCliente();
+					JOptionPane.showMessageDialog(null, "Cliente inserido com sucesso");
 				} else {
-					JOptionPane.showMessageDialog(null, "Erro ao inserir, verifique os dados do cliente");
+					JOptionPane.showMessageDialog(null, "Ocorreu um erro ao inserir o cliente");
 				}
 				break;
 			
 			/* Confirmar a alteração de um cadastro */
 			case ALTERAR:
-				if (cliente.isValido()) {
-					if (dao.alterCliente(cliente) > 0) {
-						JOptionPane.showMessageDialog(null, "Cliente alterado com sucesso");
-						saida.sincronizarTabela();
-					} else {
-						JOptionPane.showMessageDialog(null, "Ocorreu um erro ao alterar o cliente");
-					}
+				if (dao.alterCliente(cliente) > 0) {
+					saida.sincronizarTabela();
+					entrada.limparCliente();
+					JOptionPane.showMessageDialog(null, "Cliente alterado com sucesso");
 				} else {
-					JOptionPane.showMessageDialog(null, "Erro ao alterar, verifique os dados do cliente");
+					JOptionPane.showMessageDialog(null, "Ocorreu um erro ao alterar o cliente");
 				}
 				break;
 			
 			/* Confirmar a remoção de um cadastro */
 			default:
-				if (cliente.isValido()) {
-					if (dao.removeCliente(cliente) > 0) {
-						JOptionPane.showMessageDialog(null, "Cliente removido com sucesso");
-						saida.sincronizarTabela();
-					} else {
-						JOptionPane.showMessageDialog(null, "Ocorreu um erro ao remover o cliente");
-					}
+				if (dao.removeCliente(cliente) > 0) {
+					saida.sincronizarTabela();
+					entrada.limparCliente();
+					JOptionPane.showMessageDialog(null, "Cliente removido com sucesso");
 				} else {
-					JOptionPane.showMessageDialog(null, "Erro ao remover, verifique os dados do cliente");
+					JOptionPane.showMessageDialog(null, "Ocorreu um erro ao remover o cliente");
 				}
 				break;
 		}
@@ -200,8 +184,13 @@ public class BotoesController {
 		/* Senão, bloquear qualquer tentativa de confirmação ou cancelamento devido à não existência de ações */
 		else {
 			botoes.get("Inserir").setEnabled(true);
-			botoes.get("Remover").setEnabled(true);
-			botoes.get("Alterar").setEnabled(true);
+			if (saida.clienteExists(entrada.getCliente().getId())) {
+				botoes.get("Remover").setEnabled(true);
+				botoes.get("Alterar").setEnabled(true);
+			} else {
+				botoes.get("Remover").setEnabled(false);
+				botoes.get("Alterar").setEnabled(false);
+			}
 			botoes.get("Confirmar").setEnabled(false);
 			botoes.get("Cancelar").setEnabled(false);
 		}
@@ -215,6 +204,10 @@ public class BotoesController {
 			atualizarEstados();
 			entrada.setAllCamposEnabled(!newValue);
 		});
+	}
+	
+	public Map<String, JButton> getBotoes() {
+		return botoes;
 	}
 	
 	public boolean isConfirmando() {
