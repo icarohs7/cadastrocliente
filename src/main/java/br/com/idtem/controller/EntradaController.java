@@ -6,6 +6,9 @@ import java.util.Map;
 import br.com.idtem.model.Cliente;
 import br.com.idtem.view.Campo;
 
+/**
+ * Controlador do painel de entrada contendo os campos
+ */
 public class EntradaController {
 	/**
 	 * Instância do controller

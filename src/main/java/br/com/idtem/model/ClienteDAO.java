@@ -95,6 +95,27 @@ public class ClienteDAO {
 	}
 	
 	/**
+	 * Retorna o próximo id a set utilizado
+	 * @return O próximo id
+	 */
+	public int getNextId() {
+		var ret = onDbContext(db -> {
+			var sql = "SELECT MAX(id) AS 'id' FROM cliente";
+			try (var stmt = db.createStatement()) {
+				var rs = stmt.executeQuery(sql);
+				rs.next();
+				return rs.getInt("id");
+			}
+		});
+		
+		if (ret == null) {
+			return 1;
+		} else {
+			return ret + 1;
+		}
+	}
+	
+	/**
 	 * Função auxiliar para execução de statements dml relacionado ao cliente
 	 * @param cliente Cliente
 	 * @param sql     Statement sql

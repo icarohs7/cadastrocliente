@@ -8,32 +8,12 @@ import javafx.beans.property.StringProperty;
  */
 @SuppressWarnings("deprecation")
 public class Cliente {
-	private StringProperty id = new SimpleStringProperty("0");
+	private StringProperty id = new SimpleStringProperty("" + ClienteDAO.getINSTANCE().getNextId());
 	private StringProperty nome = new SimpleStringProperty("");
 	private StringProperty telefoneResidencial = new SimpleStringProperty("");
 	private StringProperty telefoneComercial = new SimpleStringProperty("");
 	private StringProperty telefoneCelular = new SimpleStringProperty("");
 	private StringProperty email = new SimpleStringProperty("");
-	
-	/**
-	 * Construtor padrão registrando os listeners para eventos
-	 */
-	public Cliente() {
-		
-		//		/* Rotina para disparar o evento de mudança aos observers */
-		//		Runnable mudar = () -> {
-		//			setChanged();
-		//			notifyObservers();
-		//		};
-		
-		//		/* Ligar as mudanças dos campos individuais ao observable da classe */
-		//		idProperty().addListener((observable, oldValue, newValue) -> mudar.run());
-		//		nomeProperty().addListener((observable, oldValue, newValue) -> mudar.run());
-		//		telefoneResidencialProperty().addListener((observable, oldValue, newValue) -> mudar.run());
-		//		telefoneComercialProperty().addListener((observable, oldValue, newValue) -> mudar.run());
-		//		telefoneCelularProperty().addListener((observable, oldValue, newValue) -> mudar.run());
-		//		emailProperty().addListener((observable, oldValue, newValue) -> mudar.run());
-	}
 	
 	/**
 	 * Verificar se o objeto é válido, com todas as propriedades definidas
@@ -59,7 +39,7 @@ public class Cliente {
 	 * Limpa o valor de todas as propriedades
 	 */
 	public void clear() {
-		setId(0);
+		setId(ClienteDAO.getINSTANCE().getNextId());
 		setNome("");
 		setTelefoneResidencial("");
 		setTelefoneComercial("");

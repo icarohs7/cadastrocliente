@@ -7,9 +7,13 @@ import java.util.Map;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 
+import br.com.idtem.model.ClienteDAO;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 
+/**
+ * Controlador do painel de botões
+ */
 public class BotoesController {
 	/**
 	 * Instância do controller
@@ -41,7 +45,7 @@ public class BotoesController {
 	/**
 	 * Controlador dos dados de saída
 	 */
-	private final SaidaController saida = SaidaController.getInstance();
+	private final SaidaController saida = SaidaController.getINSTANCE();
 	/**
 	 * Tipo de confirmação
 	 */
@@ -81,7 +85,9 @@ public class BotoesController {
 	public void inserir() {
 		/* Inserção só é permitida quando o cliente tem todos os seus
 		 * dados preenchidos */
-		if (entrada.getCliente().isValido()) {
+		if (saida.clienteExists(entrada.getCliente().getId())) {
+			entrada.limparCliente();
+		} else if (entrada.getCliente().isValido()) {
 			tipoConfirmacao = TipoConfirmacao.INSERIR;
 			setConfirmando(true);
 		} else {
@@ -122,16 +128,51 @@ public class BotoesController {
 	 */
 	public void confirmar() {
 		setConfirmando(false);
+		var cliente = entrada.getCliente();
+		var dao = ClienteDAO.getINSTANCE();
 		
 		switch (tipoConfirmacao) {
+			
+			/* Confirmar o cadastro de um cliente */
 			case INSERIR:
-				System.out.println("Inserir");
+				if (cliente.isValido()) {
+					if (dao.addCliente(cliente) > 1) {
+						JOptionPane.showMessageDialog(null, "Cliente inserido com sucesso");
+						saida.sincronizarTabela();
+					} else {
+						JOptionPane.showMessageDialog(null, "Ocorreu um erro ao inserir o cliente");
+					}
+				} else {
+					JOptionPane.showMessageDialog(null, "Erro ao inserir, verifique os dados do cliente");
+				}
 				break;
+			
+			/* Confirmar a alteração de um cadastro */
 			case ALTERAR:
-				System.out.println("Alterar");
+				if (cliente.isValido()) {
+					if (dao.alterCliente(cliente) > 0) {
+						JOptionPane.showMessageDialog(null, "Cliente alterado com sucesso");
+						saida.sincronizarTabela();
+					} else {
+						JOptionPane.showMessageDialog(null, "Ocorreu um erro ao alterar o cliente");
+					}
+				} else {
+					JOptionPane.showMessageDialog(null, "Erro ao alterar, verifique os dados do cliente");
+				}
 				break;
+			
+			/* Confirmar a remoção de um cadastro */
 			default:
-				System.out.println("Remover");
+				if (cliente.isValido()) {
+					if (dao.removeCliente(cliente) > 0) {
+						JOptionPane.showMessageDialog(null, "Cliente removido com sucesso");
+						saida.sincronizarTabela();
+					} else {
+						JOptionPane.showMessageDialog(null, "Ocorreu um erro ao remover o cliente");
+					}
+				} else {
+					JOptionPane.showMessageDialog(null, "Erro ao remover, verifique os dados do cliente");
+				}
 				break;
 		}
 	}
@@ -195,7 +236,7 @@ public class BotoesController {
 	/**
 	 * Enum com os tipos de confirmação
 	 */
-	private enum TipoConfirmacao {
+	public enum TipoConfirmacao {
 		INSERIR, REMOVER, ALTERAR
 	}
 }

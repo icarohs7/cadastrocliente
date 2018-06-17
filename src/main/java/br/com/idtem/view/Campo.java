@@ -68,6 +68,7 @@ public class Campo extends JPanel {
 	
 	/**
 	 * Realizar um binding bidirecional entre o texto do campo e a propriedade
+	 * @param property Propriedade a ser atrelada ao campo
 	 */
 	public void bind(StringProperty property) {
 		

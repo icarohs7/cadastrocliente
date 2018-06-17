@@ -20,7 +20,7 @@ import br.com.idtem.controller.SaidaController;
  * Painel contendo a tabela de clientes cadastrados
  */
 class PainelTabela extends JPanel {
-	private SaidaController controller = SaidaController.getInstance();
+	private SaidaController controller = SaidaController.getINSTANCE();
 	
 	/**
 	 * Inicialização do painel

@@ -9,6 +9,9 @@ import java.util.stream.Collectors;
 import br.com.idtem.model.Cliente;
 import br.com.idtem.model.ClienteDAO;
 
+/**
+ * Controlador do painel de saída contendo a tabela
+ */
 public class SaidaController {
 	/**
 	 * Instância do controller
@@ -20,7 +23,7 @@ public class SaidaController {
 	}
 	
 	
-	public static SaidaController getInstance() {
+	public static SaidaController getINSTANCE() {
 		return INSTANCE;
 	}
 	
@@ -88,6 +91,18 @@ public class SaidaController {
 		var novaLista = ClienteDAO.getINSTANCE().getClientes();
 		clientes.clear();
 		clientes.addAll(novaLista);
+	}
+	
+	/**
+	 * Retorna o próximo id de usuário
+	 * @return O id
+	 */
+	public int getNextId() {
+		return clientes.stream()
+		               .map(Cliente::getId)
+		               .reduce(Math::max)
+		               .map(value -> value + 1)
+		               .orElse(1);
 	}
 	
 	public EditableTableModel getTabela() {
