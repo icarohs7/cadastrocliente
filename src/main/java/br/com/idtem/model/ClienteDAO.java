@@ -94,18 +94,18 @@ public class ClienteDAO {
 	 */
 	public int getNextId() {
 		var ret = onDbContext(db -> {
-			var sql = "SELECT MAX(id) AS 'id' FROM cliente";
+			var sql = "SHOW TABLE STATUS WHERE `Name` = 'cliente'";
 			try (var stmt = db.createStatement()) {
 				var rs = stmt.executeQuery(sql);
 				rs.next();
-				return rs.getInt("id");
+				return rs.getInt("Auto_increment");
 			}
 		});
 		
 		if (ret == null) {
 			return 1;
 		} else {
-			return ret + 1;
+			return ret;
 		}
 	}
 	

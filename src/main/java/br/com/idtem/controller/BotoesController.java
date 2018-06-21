@@ -54,7 +54,10 @@ public class BotoesController {
 	 * Se há uma operação esperando confirmação no momento
 	 */
 	private BooleanProperty confirmando = new SimpleBooleanProperty(false);
-	
+	/**
+	 * Se há uma operação de inserção ocorrendo no momento
+	 */
+	private BooleanProperty inserindo = new SimpleBooleanProperty(false);
 	
 	/**
 	 * Inicialização do controller com a criação e configuração dos botões
@@ -85,12 +88,16 @@ public class BotoesController {
 	public void inserir() {
 		/* Inserção só é permitida quando o cliente tem todos os seus
 		 * dados preenchidos */
-		if (saida.clienteExists(entrada.getCliente().getId())) {
+		if (!isInserindo()) {
 			entrada.limparCliente();
+			entrada.setAllCamposEnabled(true);
+			setConfirmando(false);
+			setInserindo(true);
 			atualizarEstados();
 		} else if (entrada.getCliente().isRegexValido()) {
 			tipoConfirmacao = TipoConfirmacao.INSERIR;
 			setConfirmando(true);
+			setInserindo(false);
 		}
 	}
 	
@@ -128,7 +135,7 @@ public class BotoesController {
 			
 			/* Confirmar o cadastro de um cliente */
 			case INSERIR:
-				if (dao.addCliente(cliente) > 1) {
+				if (dao.addCliente(cliente) > 0) {
 					saida.sincronizarTabela();
 					entrada.limparCliente();
 					JOptionPane.showMessageDialog(null, "Cliente inserido com sucesso");
@@ -194,6 +201,12 @@ public class BotoesController {
 			botoes.get("Confirmar").setEnabled(false);
 			botoes.get("Cancelar").setEnabled(false);
 		}
+		
+		if (isInserindo()) {
+			botoes.get("Sair").setEnabled(false);
+		} else {
+			botoes.get("Sair").setEnabled(true);
+		}
 	}
 	
 	/**
@@ -202,7 +215,11 @@ public class BotoesController {
 	private void registrarListeners() {
 		confirmandoProperty().addListener((observable, oldValue, newValue) -> {
 			atualizarEstados();
-			entrada.setAllCamposEnabled(!newValue);
+			if (tipoConfirmacao == TipoConfirmacao.REMOVER && newValue) {
+				entrada.setAllCamposEnabled(false);
+			} else {
+				entrada.setAllCamposEnabled(newValue);
+			}
 		});
 	}
 	
@@ -220,6 +237,18 @@ public class BotoesController {
 	
 	public BooleanProperty confirmandoProperty() {
 		return confirmando;
+	}
+	
+	public boolean isInserindo() {
+		return inserindo.get();
+	}
+	
+	private void setInserindo(boolean inserindo) {
+		this.inserindo.set(inserindo);
+	}
+	
+	public BooleanProperty inserindoProperty() {
+		return inserindo;
 	}
 	
 	public TipoConfirmacao getTipoConfirmacao() {

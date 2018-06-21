@@ -16,6 +16,8 @@ targetCompatibility = 1.10
 
 clean { Paths.get('out').deleteDir() }
 
+shadowJar { destinationDir new File("$projectDir/jar") }
+
 repositories {
 	mavenLocal()
 	mavenCentral()

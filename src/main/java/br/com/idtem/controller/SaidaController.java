@@ -6,8 +6,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.swing.JOptionPane;
-
 import br.com.idtem.model.Cliente;
 import br.com.idtem.model.ClienteDAO;
 
@@ -66,26 +64,17 @@ public class SaidaController {
 	 * @param row Linha da tabela em que o cliente está contido
 	 */
 	public void editarCliente(int row) {
-		if (!EntradaController.getINSTANCE().getCliente().isVazio()) {
-			var res = JOptionPane.showConfirmDialog(null,
-			                                        "Deseja editar o usuario selecionado? " +
-			                                        "Os dados informados atualmente serao perdidos",
-			                                        "Confirmar edicao",
-			                                        JOptionPane.YES_NO_OPTION);
-			if (res != JOptionPane.YES_OPTION) {
-				return;
-			}
-		}
+		var clienteId = Integer.parseInt(tabela.getValueAt(row, 0).toString());
 		EntradaController
 				.getINSTANCE()
 				.setCliente(clientes.stream()
-				                    .filter(c -> c.getId() == Integer.parseInt(tabela.getValueAt(row, 0).toString()))
+				                    .filter(c -> c.getId() == clienteId)
 				                    .findFirst().orElseThrow());
 		BotoesController.getINSTANCE().atualizarEstados();
 	}
 	
 	/**
-	 * Sincroniza os dados da tabela com o banco de dados
+	 * Sincroniza os dados da tabela com o banco de dados asíncronamente
 	 * @return A thread responsável pela sincronização, iniciada automaticamente
 	 */
 	public synchronized Thread sincronizarTabela() {
