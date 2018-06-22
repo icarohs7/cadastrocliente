@@ -1,20 +1,18 @@
-import java.nio.file.Paths
-
-buildscript { ext { junit_version = '5.1.0' } }
-
 plugins {
 	id 'application'
 	id 'com.github.johnrengelman.shadow' version '2.0.4'
 }
 
-mainClassName = 'br.com.idtem.Aplicacao'
-group 'br.com.idtem'
-version '0.0.1'
+mainClassName = 'com.github.icarohs7.CadastroCliente'
+group 'com.github.icarohs7'
+version '1.0.0'
 
 sourceCompatibility = 1.10
 targetCompatibility = 1.10
 
-clean { Paths.get('out').deleteDir() }
+clean { new File('out').deleteDir() }
+
+test { useJUnitPlatform() }
 
 shadowJar { destinationDir new File("$projectDir/jar") }
 
@@ -24,11 +22,12 @@ repositories {
 }
 
 dependencies {
-	implementation 'com.github.icarohs7.unoxlib:UNoxLib:0.2.4'
+	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.2.0'
+	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.2.0'
+	implementation 'com.github.icarohs7.unoxlib:UNoxLib:0.3.1'
 	implementation 'com.miglayout:miglayout:3.7.4'
 	implementation 'com.jtattoo:JTattoo:1.6.11'
 	implementation 'mysql:mysql-connector-java:8.0.11'
 	implementation 'org.jetbrains:annotations:16.0.2'
-	testImplementation "org.junit.jupiter:junit-jupiter-api:$junit_version"
-	testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junit_version"
+	implementation 'org.jdbi:jdbi3-core:3.3.0'
 }

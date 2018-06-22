@@ -1,1 +1,0 @@
-packageSearchIndex = [{"l":"br.com.idtem"},{"l":"br.com.idtem.controller"},{"l":"br.com.idtem.model"},{"l":"br.com.idtem.view"}]
